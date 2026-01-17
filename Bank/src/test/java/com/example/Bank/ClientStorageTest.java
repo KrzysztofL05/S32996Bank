@@ -18,35 +18,62 @@ class ClientStorageTest {
 
     @Test
     void registerClientShouldAddClient() {
-        clientStorage.registerClient(1, 100.0);
+        // Given
+        int clientId = 1;
+        double initialBalance = 100.0;
 
-        assertThat(clientStorage.exists(1)).isTrue();
-        Optional<Client> client = clientStorage.getClient(1);
+        // When
+        clientStorage.registerClient(clientId, initialBalance);
+
+        // Then
+        assertThat(clientStorage.exists(clientId)).isTrue();
+
+        Optional<Client> client = clientStorage.getClient(clientId);
         assertThat(client).isPresent();
-        assertThat(client.get().getBalance()).isEqualTo(100.0);
+        assertThat(client.get().getBalance()).isEqualTo(initialBalance);
     }
 
     @Test
     void getClientNonExistingClientShouldReturnEmpty() {
-        Optional<Client> client = clientStorage.getClient(42);
+        // Given
+        int nonExistingClientId = 42;
+
+        // When
+        Optional<Client> client = clientStorage.getClient(nonExistingClientId);
+
+        // Then
         assertThat(client).isEmpty();
     }
 
     @Test
     void existsNonExistingClientShouldReturnFalse() {
-        assertThat(clientStorage.exists(42)).isFalse();
+        // Given
+        int nonExistingClientId = 42;
+
+        // When
+        boolean exists = clientStorage.exists(nonExistingClientId);
+
+        // Then
+        assertThat(exists).isFalse();
     }
 
     @Test
     void registerClientDuplicateShouldNotOverwrite() {
-        boolean first = clientStorage.registerClient(1, 100.0);
-        boolean second = clientStorage.registerClient(1, 200.0);
+        // Given
+        int clientId = 1;
+        double firstBalance = 100.0;
+        double secondBalance = 200.0;
 
+        // When
+        boolean first = clientStorage.registerClient(clientId, firstBalance);
+        boolean second = clientStorage.registerClient(clientId, secondBalance);
+
+        // Then
         assertThat(first).isTrue();
         assertThat(second).isFalse();
 
-        Optional<Client> client = clientStorage.getClient(1);
+        Optional<Client> client = clientStorage.getClient(clientId);
         assertThat(client).isPresent();
-        assertThat(client.get().getBalance()).isEqualTo(100.0);
+        assertThat(client.get().getBalance()).isEqualTo(firstBalance);
     }
 }
